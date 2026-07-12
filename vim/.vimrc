@@ -87,7 +87,7 @@ if has('termguicolors')
   set termguicolors
 endif
 
-" custom highlight (ajuste os 238/239 pelo que ficar melhor pra você)
+" custom highlight (adjust 238/239 to whatever looks best for you)
 highlight Visual    cterm=NONE ctermfg=NONE ctermbg=238
 highlight Search    cterm=NONE ctermfg=NONE ctermbg=239
 highlight IncSearch cterm=NONE ctermfg=NONE ctermbg=242

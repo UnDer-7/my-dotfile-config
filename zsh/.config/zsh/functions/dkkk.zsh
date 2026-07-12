@@ -1,9 +1,9 @@
 dkkk() {
-    echo "⚠️  Isso vai parar todos os containers, removê-los e apagar todos os volumes."
-    read "reply?Tem certeza que deseja continuar? (y/N) "
+    echo "⚠️  This will stop all containers, remove them, and delete all volumes."
+    read "reply?Are you sure you want to continue? (y/N) "
     if [[ "$reply" == "y" || "$reply" == "Y" ]]; then
         docker stop $(docker ps -q) && docker rm $(docker ps -a -q) && docker volume rm $(docker volume ls -q) && docker ps -a && docker volume ls
     else
-        echo "Operação cancelada."
+        echo "Operation cancelled."
     fi
 }

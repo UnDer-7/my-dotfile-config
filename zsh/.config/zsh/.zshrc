@@ -17,8 +17,6 @@ fi
 ############
 ### ENVS ###
 ############
-export DOTFILE_CONFIG_HOME=$HOME/my_dotfile_config
-
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
@@ -42,19 +40,11 @@ fi
 source "$HOME/.zsh_secrets"
 
 # ZSH
-export ZSH_HOME=$DOTFILE_CONFIG_HOME/zsh
+export ZSH_HOME=$ZDOTDIR
 export ZSH_PLUGINS_FOLDER=$ZSH_HOME/plugins
 export ZSH_THEMES_FOLDER=$ZSH_HOME/themes
 export ZSH_FUNCTIONS_FOLDER=$ZSH_HOME/functions
 export ZSH_ALIAS_FOLDER=$ZSH_HOME/alias
-
-# VIM
-export VIM_HOME=$DOTFILE_CONFIG_HOME/vim
-
-#############
-#### VIM ####
-#############
-export VIMINIT="source $VIM_HOME/.vimrc"
 
 ###############
 # ZSH OPTIONS #

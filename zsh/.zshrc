@@ -17,7 +17,7 @@ fi
 ############
 ### ENVS ###
 ############
-export DOTFILE_CONFIG_HOME=$HOME/my_dotfile_config
+export DOTFILE_CONFIG_HOME=$HOME/my-dotfile-config
 
 export VISUAL=vim
 export EDITOR="$VISUAL"

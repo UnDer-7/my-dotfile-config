@@ -21,6 +21,7 @@ export DOTFILE_CONFIG_HOME=$HOME/my-dotfile-config
 
 export VISUAL=vim
 export EDITOR="$VISUAL"
+export PATH="$HOME/.local/bin:$PATH"
 
 # Load local secrets (not tracked by git)
 if [[ ! -f "$HOME/.zsh_secrets" ]]; then

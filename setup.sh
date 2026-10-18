@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Stow-based dotfile linker/unlinker.
-# Usage: ./setup {link|unlink}
+# Usage: ./setup.sh {link|unlink}
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ ensure_stow_installed() {
         sudo apt-get update && sudo apt-get install -y stow
       elif command -v pacman &>/dev/null; then
         echo "stow not found, installing via pacman, may ask for your sudo password..."
-        sudo pacman -Sy --noconfirm stow
+        sudo pacman -S --needed stow
       elif command -v dnf &>/dev/null; then
         echo "stow not found, installing via dnf, may ask for your sudo password..."
         sudo dnf install -y stow
@@ -60,7 +60,7 @@ ensure_stow_installed() {
 }
 
 usage() {
-  echo "Usage: ./setup {link|unlink}" >&2
+  echo "Usage: ./setup.sh {link|unlink}" >&2
 }
 
 if [[ $# -ne 1 ]]; then
@@ -71,6 +71,9 @@ fi
 case "$1" in
   link)
     ensure_stow_installed
+    # Without a real ~/.config, stow would symlink the whole directory into
+    # the repo and every app writing there would write into the repo.
+    mkdir -p "$HOME/.config"
     stow -v -t "$HOME" -d "$REPO_DIR" "${PACKAGES[@]}"
     ;;
   unlink)

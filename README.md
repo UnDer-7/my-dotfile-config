@@ -23,7 +23,7 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
 
 2. **Manual backup/removal of conflicting real files.** Stow refuses to
    create a symlink if a *real* file (not a symlink) already exists at the
-   target. Before the first `./setup link`, check and manually move/remove,
+   target. Before the first `./setup.sh link`, check and manually move/remove,
    if present:
 
    - `~/.zshenv`
@@ -34,11 +34,13 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
    The script **does not** back these up automatically — this is a required
    manual step, to avoid risky backup logic inside the script.
 
-3. Run `./setup link`. The script:
+3. Run `./setup.sh link`. The script:
    - detects the OS (`Linux`/`Darwin`) and picks the right packages;
    - checks whether `stow` is installed; if not, it asks before installing
      (via `apt-get`/`pacman`/`dnf` on Linux, or `brew` on macOS — in that
      case Homebrew must already be installed);
+   - creates `~/.config` if missing, so Stow links only `~/.config/zsh`
+     instead of the whole `~/.config` directory;
    - runs `stow -v -t "$HOME" -d "$REPO_DIR" <packages>`.
 
 4. **Zsh plugins and theme (p10k, fast-syntax-highlighting,
@@ -54,10 +56,14 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
    don't already exist. Used for machine-specific overrides and secrets —
    never versioned.
 
+6. Zsh history lives in `~/.local/state/zsh/history` and the completion dump
+   in `~/.cache/zsh/zcompdump` (respecting `XDG_STATE_HOME`/`XDG_CACHE_HOME`),
+   outside the repo.
+
 ## Reverting
 
 ```sh
-./setup unlink
+./setup.sh unlink
 ```
 
 Removes the symlinks created by Stow (`stow -D`). Real files inside the repo
@@ -67,7 +73,7 @@ are not affected.
 
 - Each package is isolated (zsh, vim, ...) — lets you link only what a given
   machine needs.
-- No extra dependency: just `stow` itself, `setup` is plain bash (no
+- No extra dependency: just `stow` itself, `setup.sh` is plain bash (no
   Justfile/Makefile).
 - Third-party plugins/themes stay out of git (gitignored), only the manifest
   of which plugin/theme to use is tracked — same behavior as before the

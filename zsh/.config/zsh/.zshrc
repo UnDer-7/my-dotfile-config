@@ -19,6 +19,7 @@ fi
 ############
 export VISUAL=vim
 export EDITOR="$VISUAL"
+export PATH="$HOME/.local/bin:$PATH"
 
 # Load local secrets (not tracked by git)
 if [[ ! -f "$HOME/.zsh_secrets" ]]; then
@@ -92,6 +93,47 @@ done
 for alias_file in "$ZSH_ALIAS_FOLDER"/*.zsh; do
   source "$alias_file"
 done
+
+##################
+# CUSTOM SCRIPTS #
+##################
+# Keep machine-specific scripts outside the dotfiles repository.
+if [[ -d "$HOME/.custom_scripts" ]] || mkdir -p "$HOME/.custom_scripts"; then
+  if [[ ! -e "$HOME/.custom_scripts/README.md" ]]; then
+    cat > "$HOME/.custom_scripts/README.md" << 'EOF'
+# Scripts locais do zsh
+
+Esta pasta fica fora do repositório de dotfiles e é criada pelo .zshrc.
+Somente arquivos regulares com extensão `.sh` diretamente nesta pasta são
+carregados, em ordem de nome, ao abrir um terminal. Subpastas e arquivos com
+outras extensões (incluindo este README.md) são ignorados.
+
+Os arquivos são carregados com `source` no zsh atual: use código compatível
+com zsh, mesmo com a extensão `.sh`. Não é necessário dar permissão de execução.
+Todo código fora de funções é executado na inicialização do terminal;
+coloque aqui apenas scripts confiáveis e evite ações automáticas com efeitos externos.
+Para credenciais e tokens, use `~/.zsh_secrets`, não esta pasta.
+
+Exemplo de arquivo `projetos.sh`:
+
+zsh
+meus_projetos() {
+  cd "$HOME/projects"
+}
+
+
+Salve o arquivo e abra um novo terminal para usar `meus_projetos`.
+Funções com o mesmo nome substituem definições anteriores do repo.
+O `~/.zsh_local` é carregado depois e mantém prioridade sobre estes scripts.
+A criação automática não sobrescreve este README.md nem seus scripts existentes.
+EOF
+  fi
+
+  # N tolerates no matches; . selects regular files only.
+  for custom_script_file in "$HOME/.custom_scripts"/*.sh(N.); do
+    source "$custom_script_file"
+  done
+fi
 
 # Load machine-local overrides (not tracked by git)
 # Sourced after plugins/aliases/functions so it can override dotfiles defaults.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Stow-based dotfile linker/unlinker. `link` also clones the zsh plugins and
-# theme and installs the Powerlevel10k fonts.
+# theme and the kitty themes, and installs the Powerlevel10k fonts.
 # Usage: ./setup.sh {link|unlink}
 
 set -euo pipefail
@@ -10,10 +10,10 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 case "$(uname -s)" in
   Linux)
-    PACKAGES=(zsh vim)
+    PACKAGES=(zsh vim kitty)
     ;;
   Darwin)
-    PACKAGES=(zsh vim)
+    PACKAGES=(zsh vim kitty)
     ;;
   *)
     echo "Unsupported OS: $(uname -s)" >&2
@@ -98,6 +98,11 @@ install_zsh_theme() {
   clone_if_missing https://github.com/romkatv/powerlevel10k.git "$HOME/.config/zsh/themes/p10k/powerlevel10k"
 }
 
+# kitty.conf includes its theme from ./kitty-themes/themes/
+install_kitty_themes() {
+  clone_if_missing https://github.com/dexpota/kitty-themes.git "$HOME/.config/kitty/kitty-themes"
+}
+
 # Installs the fonts for the current user only (no sudo). The per-user font
 # directory works on any Linux desktop (fontconfig) and on macOS.
 install_p10k_fonts() {
@@ -161,6 +166,7 @@ case "$1" in
     stow -v -t "$HOME" -d "$REPO_DIR" "${PACKAGES[@]}"
     install_zsh_plugins
     install_zsh_theme
+    install_kitty_themes
     install_p10k_fonts
     print_font_instructions
     ;;

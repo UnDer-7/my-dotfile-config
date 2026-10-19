@@ -1,14 +1,14 @@
 # my-dotfile-config
 
 Dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/). Each
-top-level directory in the repo is a Stow package (`zsh/`, `vim/`, ...), with
+top-level directory in the repo is a Stow package (`zsh/`, `vim/`, `kitty/`, ...), with
 the internal layout mirroring exactly where the files should land under
 `$HOME` (e.g. `zsh/.config/zsh/.zshrc` becomes `~/.config/zsh/.zshrc`).
 
 ## Packages per OS
 
-- **Linux**: `zsh`, `vim` (more packages will be added here in the future)
-- **macOS**: `zsh`, `vim`
+- **Linux**: `zsh`, `vim`, `kitty` (more packages will be added here in the future)
+- **macOS**: `zsh`, `vim`, `kitty`
 
 The `./setup.sh` script detects the OS automatically and picks the right list.
 
@@ -29,6 +29,7 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
    - `~/.zshenv`
    - `~/.zshrc` (old version, if it still exists outside the `ZDOTDIR` scheme)
    - `~/.vimrc`
+   - `~/.config/kitty/kitty.conf`
    - `~/.config/zsh`
 
    The script **does not** back these up automatically — this is a required
@@ -59,6 +60,13 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
    | `plugins/zsh-autosuggestions`      | https://github.com/zsh-users/zsh-autosuggestions        |
    | `plugins/zsh-completions`          | https://github.com/zsh-users/zsh-completions            |
    | `themes/p10k/powerlevel10k`        | https://github.com/romkatv/powerlevel10k                |
+
+   It also clones the kitty themes (`kitty.conf` includes its theme from
+   there). Kitty itself is not installed by the script, only its config:
+
+   | Path under `~/.config/kitty/` | Repo                                     |
+   |-------------------------------|------------------------------------------|
+   | `kitty-themes`                | https://github.com/dexpota/kitty-themes |
 
    To update them, run `git pull` inside each directory.
 

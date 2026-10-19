@@ -1,16 +1,36 @@
 # my-dotfile-config
 
 Dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/). Each
-top-level directory in the repo is a Stow package (`zsh/`, `vim/`, `kitty/`, ...), with
+top-level directory in the repo is a Stow package (`zsh/`, `vim/`, `kitty/`, `claude/`, ...), with
 the internal layout mirroring exactly where the files should land under
 `$HOME` (e.g. `zsh/.config/zsh/.zshrc` becomes `~/.config/zsh/.zshrc`).
 
 ## Packages per OS
 
-- **Linux**: `zsh`, `vim`, `kitty` (more packages will be added here in the future)
-- **macOS**: `zsh`, `vim`, `kitty`
+- **Linux**: `zsh`, `vim`, `kitty`, `claude` (more packages will be added here in the future)
+- **macOS**: `zsh`, `vim`, `kitty`, `claude`
 
 The `./setup.sh` script detects the OS automatically and picks the right list.
+
+## Manual dependencies
+
+The script links the configs but does not install the programs that use them.
+Install these yourself (with your package manager or the official installer);
+`./setup.sh link` ends by listing the ones still missing, without failing:
+
+| Program  | Why                                          |
+|----------|----------------------------------------------|
+| `zsh`    | shell (zsh config); must be the default shell: `chsh -s "$(command -v zsh)"` |
+| `vim`    | editor, `EDITOR=vim` (vim config)            |
+| `kitty`  | terminal (kitty config)                      |
+| `claude` | Claude Code (claude config)                  |
+| `jq`     | needed by the Claude Code status line        |
+
+The script itself needs `git` and `curl` (it stops if they are missing) and
+`stow` (it offers to install it).
+
+When adding a dependency, update both this table and `check_dependencies` in
+`setup.sh`.
 
 ## Bootstrap on a new machine
 
@@ -30,6 +50,7 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
    - `~/.zshrc` (old version, if it still exists outside the `ZDOTDIR` scheme)
    - `~/.vimrc`
    - `~/.config/kitty/kitty.conf`
+   - `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/statusline.sh`
    - `~/.config/zsh`
 
    The script **does not** back these up automatically — this is a required
@@ -40,11 +61,13 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
    - checks whether `stow` is installed; if not, it asks before installing
      (via `apt-get`/`pacman`/`dnf` on Linux, or `brew` on macOS — in that
      case Homebrew must already be installed);
-   - creates `~/.config` if missing, so Stow links only `~/.config/zsh`
-     instead of the whole `~/.config` directory;
+   - creates `~/.config` and `~/.claude` if missing, so Stow links only the
+     files/subdirectories inside them instead of the whole directories;
    - runs `stow -v -t "$HOME" -d "$REPO_DIR" <packages>`;
    - clones the zsh plugins and theme (see step 4);
-   - installs the Powerlevel10k fonts (see step 5).
+   - installs the Powerlevel10k fonts (see step 5);
+   - lists missing manual dependencies and warns if zsh is not the default
+     shell (see [Manual dependencies](#manual-dependencies)).
 
    Requires `git` and `curl`. Re-running is safe: plugins, theme and fonts
    that are already present are skipped.

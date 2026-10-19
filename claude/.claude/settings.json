@@ -1,0 +1,59 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git -C:*)",
+      "Bash(git -c:*)",
+      "Bash(git add:*)",
+      "Bash(git am:*)",
+      "Bash(git apply:*)",
+      "Bash(git bisect:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git clean:*)",
+      "Bash(git clone:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git fetch:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git gc:*)",
+      "Bash(git init:*)",
+      "Bash(git maintenance:*)",
+      "Bash(git merge:*)",
+      "Bash(git mv:*)",
+      "Bash(git notes:*)",
+      "Bash(git prune:*)",
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reflog delete:*)",
+      "Bash(git reflog expire:*)",
+      "Bash(git remote:*)",
+      "Bash(git replace:*)",
+      "Bash(git reset:*)",
+      "Bash(git restore:*)",
+      "Bash(git revert:*)",
+      "Bash(git rm:*)",
+      "Bash(git sparse-checkout:*)",
+      "Bash(git stash:*)",
+      "Bash(git submodule:*)",
+      "Bash(git switch:*)",
+      "Bash(git tag:*)",
+      "Bash(git update-index:*)",
+      "Bash(git update-ref:*)",
+      "Bash(git worktree:*)",
+      "EnterWorktree"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "enabledPlugins": {
+    "postman@claude-plugins-official": false
+  }
+}

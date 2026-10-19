@@ -77,3 +77,10 @@ tmp.*
 
 # Kitty Themes
 /kitty/.config/kitty/kitty-themes/
+
+# Claude Code: only the config files are tracked. Safety net in case ~/.claude
+# ever gets folded into the repo (it holds history and credentials).
+/claude/.claude/*
+!/claude/.claude/settings.json
+!/claude/.claude/CLAUDE.md
+!/claude/.claude/statusline.sh

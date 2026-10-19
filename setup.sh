@@ -10,10 +10,10 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 case "$(uname -s)" in
   Linux)
-    PACKAGES=(zsh vim kitty)
+    PACKAGES=(zsh vim kitty claude)
     ;;
   Darwin)
-    PACKAGES=(zsh vim kitty)
+    PACKAGES=(zsh vim kitty claude)
     ;;
   *)
     echo "Unsupported OS: $(uname -s)" >&2
@@ -141,10 +141,46 @@ install_p10k_fonts() {
 print_font_instructions() {
   cat <<EOF
 
-Done. One manual step left: set "MesloLGS NF" as the font of your terminal
-emulator, then open a new terminal. Instructions per terminal:
+Done.
+
+Manual step: set "MesloLGS NF" as the font of your terminal emulator, then
+open a new terminal. Instructions per terminal:
   https://github.com/romkatv/powerlevel10k#manual-font-installation
 EOF
+}
+
+# Programs the linked configs rely on. Only warns: the configs can be linked
+# before the programs are installed. Keep in sync with the README's
+# "Manual dependencies" table.
+check_dependencies() {
+  local entry cmd missing=()
+
+  for entry in \
+    "zsh|shell (zsh config)" \
+    "vim|editor, EDITOR=vim (vim config)" \
+    "kitty|terminal (kitty config)" \
+    "claude|Claude Code (claude config)" \
+    "jq|needed by the Claude Code status line"; do
+    cmd="${entry%%|*}"
+    # ~/.local/bin is only added to PATH by .zshrc, so check it explicitly.
+    command -v "$cmd" &>/dev/null || [[ -x "$HOME/.local/bin/$cmd" ]] || missing+=("$entry")
+  done
+
+  echo
+  if [[ ${#missing[@]} -eq 0 ]]; then
+    echo "All manual dependencies are installed."
+  else
+    echo "Missing dependencies (install them manually):"
+    for entry in "${missing[@]}"; do
+      printf '  - %-7s %s\n' "${entry%%|*}" "${entry#*|}"
+    done
+  fi
+
+  if [[ "$(basename "${SHELL:-}")" != "zsh" ]]; then
+    echo
+    echo "zsh is not your default shell (current: ${SHELL:-unknown}). Change it with:"
+    echo '  chsh -s "$(command -v zsh)"'
+  fi
 }
 
 usage() {
@@ -160,15 +196,17 @@ case "$1" in
   link)
     require_commands git curl
     ensure_stow_installed
-    # Without a real ~/.config, stow would symlink the whole directory into
-    # the repo and every app writing there would write into the repo.
-    mkdir -p "$HOME/.config"
+    # Without real ~/.config and ~/.claude, stow would symlink the whole
+    # directory into the repo and every app writing there would write into
+    # the repo (for ~/.claude, including history and credentials).
+    mkdir -p "$HOME/.config" "$HOME/.claude"
     stow -v -t "$HOME" -d "$REPO_DIR" "${PACKAGES[@]}"
     install_zsh_plugins
     install_zsh_theme
     install_kitty_themes
     install_p10k_fonts
     print_font_instructions
+    check_dependencies
     ;;
   unlink)
     ensure_stow_installed

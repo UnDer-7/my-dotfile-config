@@ -41,22 +41,41 @@ The `./setup.sh` script detects the OS automatically and picks the right list.
      case Homebrew must already be installed);
    - creates `~/.config` if missing, so Stow links only `~/.config/zsh`
      instead of the whole `~/.config` directory;
-   - runs `stow -v -t "$HOME" -d "$REPO_DIR" <packages>`.
+   - runs `stow -v -t "$HOME" -d "$REPO_DIR" <packages>`;
+   - clones the zsh plugins and theme (see step 4);
+   - installs the Powerlevel10k fonts (see step 5).
 
-4. **Zsh plugins and theme (p10k, fast-syntax-highlighting,
-   zsh-autosuggestions, zsh-completions) are not versioned in git** — only
-   the manifest (`.zsh_plugins.zsh`) and the theme config (`.zsh_theme.zsh`,
-   `.p10k.zsh`) are tracked. The actual plugin content needs to be installed
-   manually after `link`.
+   Requires `git` and `curl`. Re-running is safe: plugins, theme and fonts
+   that are already present are skipped.
 
-   TODO - figure out how to document this.
+4. **Zsh plugins and theme are not versioned in git** — only the manifest
+   (`.zsh_plugins.zsh`) and the theme config (`.zsh_theme.zsh`, `.p10k.zsh`)
+   are tracked. `./setup.sh link` clones them (`git clone --depth=1`) into
+   `~/.config/zsh`:
 
-5. `~/.zsh_local` and `~/.zsh_secrets` remain real files outside the repo,
+   | Path under `~/.config/zsh/`        | Repo                                                    |
+   |------------------------------------|---------------------------------------------------------|
+   | `plugins/fast-syntax-highlighting` | https://github.com/zdharma-continuum/fast-syntax-highlighting |
+   | `plugins/zsh-autosuggestions`      | https://github.com/zsh-users/zsh-autosuggestions        |
+   | `plugins/zsh-completions`          | https://github.com/zsh-users/zsh-completions            |
+   | `themes/p10k/powerlevel10k`        | https://github.com/romkatv/powerlevel10k                |
+
+   To update them, run `git pull` inside each directory.
+
+5. **Powerlevel10k font.** `./setup.sh link` installs the four MesloLGS NF
+   `.ttf` files for the current user (no sudo):
+   - Linux: `${XDG_DATA_HOME:-~/.local/share}/fonts`, then `fc-cache -f`;
+   - macOS: `~/Library/Fonts`.
+
+   **Manual step:** set `MesloLGS NF` as your terminal's font — see
+   https://github.com/romkatv/powerlevel10k#manual-font-installation.
+
+6. `~/.zsh_local` and `~/.zsh_secrets` remain real files outside the repo,
    created automatically (empty) the first time `.zshrc` is sourced, if they
    don't already exist. Used for machine-specific overrides and secrets —
    never versioned.
 
-6. Zsh history lives in `~/.local/state/zsh/history` and the completion dump
+7. Zsh history lives in `~/.local/state/zsh/history` and the completion dump
    in `~/.cache/zsh/zcompdump` (respecting `XDG_STATE_HOME`/`XDG_CACHE_HOME`),
    outside the repo.
 

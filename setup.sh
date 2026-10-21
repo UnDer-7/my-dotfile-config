@@ -75,6 +75,12 @@ require_commands() {
 
 # Plugins and themes are not tracked in git; clone them on each machine.
 # An existing directory is left untouched, so re-running is safe.
+#
+# Every repo cloned with clone_if_missing must also be listed in
+# DOTFILES_UPDATE_REPOS (zsh/.config/zsh/functions/update-my-dotfile-config.zsh),
+# which checks them for updates and pulls them. If a third place starts
+# listing these repos, or the list grows much longer, move it to a single
+# shared file that both read.
 clone_if_missing() {
   local url="$1" dest="$2"
 

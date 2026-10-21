@@ -81,7 +81,22 @@ See [PROGRAMS.md](PROGRAMS.md) for the full list, starting with the essentials
    |-------------------------------|------------------------------------------|
    | `kitty-themes`                | https://github.com/dexpota/kitty-themes |
 
-   To update them, run `git pull` inside each directory.
+   To update them (and this dotfiles repo itself), run:
+
+   ```sh
+   update-my-dotfile-config
+   ```
+
+   It runs `git pull --ff-only` in each one and lists the new commits. You
+   don't need to remember to run it: when a terminal opens, these repos are
+   checked in the background (at most once every 6 hours; terminals opened in
+   between reuse the last result). If any has updates, a notice lists it with
+   its latest commit and a GitHub link to review the changes before updating.
+   The check never blocks the terminal, and if it fails (e.g. offline), the
+   notice says so and the git errors go to
+   `~/.local/state/zsh/dotfiles-update.log`. In `~/.zsh_local`, set
+   `DOTFILES_UPDATE_CHECK=0` to disable it, or
+   `DOTFILES_UPDATE_CHECK_INTERVAL=<seconds>` to change the interval.
 
 5. **Powerlevel10k font.** `./setup.sh link` installs the four MesloLGS NF
    `.ttf` files for the current user (no sudo):

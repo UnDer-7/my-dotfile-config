@@ -103,6 +103,23 @@ install_kitty_themes() {
   clone_if_missing https://github.com/dexpota/kitty-themes.git "$HOME/.config/kitty/kitty-themes"
 }
 
+# Not a Stow package: theme.yml is a symlink switched at runtime by the
+# eza-theme zsh function. .zshrc exports EZA_CONFIG_DIR=~/.config/eza.
+install_eza_themes() {
+  local eza_dir="${EZA_CONFIG_DIR:-$HOME/.config/eza}"
+  mkdir -p "$eza_dir"
+  clone_if_missing https://github.com/eza-community/eza-themes.git "$eza_dir/eza-themes"
+
+  # Set the default theme only once, so a theme picked later survives re-runs.
+  if [[ -e "$eza_dir/theme.yml" || -L "$eza_dir/theme.yml" ]]; then
+    echo "Already present, skipping: $eza_dir/theme.yml"
+  elif [[ -f "$eza_dir/eza-themes/themes/rose-pine-moon.yml" ]]; then
+    ln -s eza-themes/themes/rose-pine-moon.yml "$eza_dir/theme.yml"
+  else
+    echo "Warning: default eza theme not found: $eza_dir/eza-themes/themes/rose-pine-moon.yml" >&2
+  fi
+}
+
 # Installs the fonts for the current user only (no sudo). The per-user font
 # directory works on any Linux desktop (fontconfig) and on macOS.
 install_p10k_fonts() {
@@ -137,45 +154,27 @@ install_p10k_fonts() {
 }
 
 # Terminal emulators each store their font setting differently, so this part
-# stays manual.
-print_font_instructions() {
+# stays manual. Programs are never installed by this script; they are listed
+# in PROGRAMS.md.
+print_next_steps() {
   cat <<EOF
 
 Done.
 
-Manual step: set "MesloLGS NF" as the font of your terminal emulator, then
-open a new terminal. Instructions per terminal:
-  https://github.com/romkatv/powerlevel10k#manual-font-installation
+Manual steps:
+  - Install the programs listed in:
+      $REPO_DIR/PROGRAMS.md
+  - Terminal font: if you use kitty, nothing to do, just install it (the
+    linked kitty.conf already uses "MesloLGS NF"). For any other terminal,
+    set "MesloLGS NF" as its font, then open a new terminal. Instructions per
+    terminal:
+      https://github.com/romkatv/powerlevel10k#manual-font-installation
 EOF
 }
 
-# Programs the linked configs rely on. Only warns: the configs can be linked
-# before the programs are installed. Keep in sync with the README's
-# "Manual dependencies" table.
-check_dependencies() {
-  local entry cmd missing=()
-
-  for entry in \
-    "zsh|shell (zsh config)" \
-    "vim|editor, EDITOR=vim (vim config)" \
-    "kitty|terminal (kitty config)" \
-    "claude|Claude Code (claude config)" \
-    "jq|needed by the Claude Code status line"; do
-    cmd="${entry%%|*}"
-    # ~/.local/bin is only added to PATH by .zshrc, so check it explicitly.
-    command -v "$cmd" &>/dev/null || [[ -x "$HOME/.local/bin/$cmd" ]] || missing+=("$entry")
-  done
-
-  echo
-  if [[ ${#missing[@]} -eq 0 ]]; then
-    echo "All manual dependencies are installed."
-  else
-    echo "Missing dependencies (install them manually):"
-    for entry in "${missing[@]}"; do
-      printf '  - %-7s %s\n' "${entry%%|*}" "${entry#*|}"
-    done
-  fi
-
+# With zsh installed but not set as the default shell, none of the zsh config
+# loads and nothing reports an error, so point it out.
+check_default_shell() {
   if [[ "$(basename "${SHELL:-}")" != "zsh" ]]; then
     echo
     echo "zsh is not your default shell (current: ${SHELL:-unknown}). Change it with:"
@@ -204,9 +203,10 @@ case "$1" in
     install_zsh_plugins
     install_zsh_theme
     install_kitty_themes
+    install_eza_themes
     install_p10k_fonts
-    print_font_instructions
-    check_dependencies
+    print_next_steps
+    check_default_shell
     ;;
   unlink)
     ensure_stow_installed

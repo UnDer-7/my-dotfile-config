@@ -12,25 +12,11 @@ the internal layout mirroring exactly where the files should land under
 
 The `./setup.sh` script detects the OS automatically and picks the right list.
 
-## Manual dependencies
+## Programs to install
 
-The script links the configs but does not install the programs that use them.
-Install these yourself (with your package manager or the official installer);
-`./setup.sh link` ends by listing the ones still missing, without failing:
-
-| Program  | Why                                          |
-|----------|----------------------------------------------|
-| `zsh`    | shell (zsh config); must be the default shell: `chsh -s "$(command -v zsh)"` |
-| `vim`    | editor, `EDITOR=vim` (vim config)            |
-| `kitty`  | terminal (kitty config)                      |
-| `claude` | Claude Code (claude config)                  |
-| `jq`     | needed by the Claude Code status line        |
-
-The script itself needs `git` and `curl` (it stops if they are missing) and
-`stow` (it offers to install it).
-
-When adding a dependency, update both this table and `check_dependencies` in
-`setup.sh`.
+`./setup.sh` links the configs but never installs the programs that use them.
+See [PROGRAMS.md](PROGRAMS.md) for the full list, starting with the essentials
+(zsh, kitty, Vim, jq, Claude Code) to install first.
 
 ## Bootstrap on a new machine
 
@@ -65,9 +51,13 @@ When adding a dependency, update both this table and `check_dependencies` in
      files/subdirectories inside them instead of the whole directories;
    - runs `stow -v -t "$HOME" -d "$REPO_DIR" <packages>`;
    - clones the zsh plugins and theme (see step 4);
+   - clones the eza themes into `~/.config/eza/eza-themes` and, only if no
+     theme is set yet, selects `rose-pine-moon` (`~/.config/eza/theme.yml`).
+     Switch themes later with `eza-theme <name>` (run it without arguments to
+     list them);
    - installs the Powerlevel10k fonts (see step 5);
-   - lists missing manual dependencies and warns if zsh is not the default
-     shell (see [Manual dependencies](#manual-dependencies)).
+   - points to [PROGRAMS.md](PROGRAMS.md) and warns if zsh is not the
+     default shell.
 
    Requires `git` and `curl`. Re-running is safe: plugins, theme and fonts
    that are already present are skipped.

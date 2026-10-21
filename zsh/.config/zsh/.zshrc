@@ -25,6 +25,13 @@ export VISUAL=vim
 export EDITOR="$VISUAL"
 export PATH="$HOME/.local/bin:$PATH"
 
+# eza: show icons when the output is a terminal (needs a Nerd Font, e.g. MesloLGS NF)
+export EZA_ICONS_AUTO=1
+# Same config dir on Linux and macOS (theme.yml, managed by setup.sh and eza-theme).
+# If you change it, also update the default in setup.sh (install_eza_themes)
+# and in functions/eza-theme.zsh.
+export EZA_CONFIG_DIR="$HOME/.config/eza"
+
 # Load local secrets (not tracked by git)
 if [[ ! -f "$HOME/.zsh_secrets" ]]; then
     echo "[zshrc] ~/.zsh_secrets not found — creating empty file with restricted permissions (600)"

@@ -1,11 +1,9 @@
-" Enable Spell check
-set spell
-
-" Set spell language
-set spelllang=en_us
-
 " Disable compatibility with vi which can cause unexpected issues.
 set nocompatible
+
+" Spell check only in prose files (it flags too much in code).
+set spelllang=en_us
+autocmd FileType markdown,gitcommit,text setlocal spell
 
 " Enable type file detection. Vim will be able to try to detect the type of file in use.
 filetype on
@@ -78,8 +76,7 @@ set wildmode=list:longest
 " Wildmenu will ignore files with these extensions.
 set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx
 
-" ————— core vimrc acima —————
-syntax on
+" ————— core vimrc above —————
 colorscheme desert
 
 " truecolor
@@ -87,7 +84,9 @@ if has('termguicolors')
   set termguicolors
 endif
 
-" custom highlight (adjust 238/239 to whatever looks best for you)
-highlight Visual    cterm=NONE ctermfg=NONE ctermbg=238
-highlight Search    cterm=NONE ctermfg=NONE ctermbg=239
-highlight IncSearch cterm=NONE ctermfg=NONE ctermbg=242
+" custom highlight (adjust to whatever looks best for you)
+" gui* applies with termguicolors on; cterm* is the fallback without it.
+" The gui colors are the same grays as the xterm 238/239/242 cterm colors.
+highlight Visual    cterm=NONE ctermfg=NONE ctermbg=238 gui=NONE guifg=NONE guibg=#444444
+highlight Search    cterm=NONE ctermfg=NONE ctermbg=239 gui=NONE guifg=NONE guibg=#4e4e4e
+highlight IncSearch cterm=NONE ctermfg=NONE ctermbg=242 gui=NONE guifg=NONE guibg=#6c6c6c

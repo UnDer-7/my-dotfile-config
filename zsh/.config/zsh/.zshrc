@@ -4,13 +4,6 @@ setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_MINUS
 
-# Keep the completion dump out of $ZDOTDIR (which is a symlink into the repo)
-ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
-[[ -d "$ZSH_CACHE_DIR" ]] || mkdir -p "$ZSH_CACHE_DIR"
-
-autoload -Uz compinit
-compinit -d "$ZSH_CACHE_DIR/zcompdump"
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -71,10 +64,10 @@ ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
 export HISTFILE=$ZSH_STATE_DIR/history
 
 # How many commands zsh will load to memory
-HISTSIZE=1000
+HISTSIZE=50000
 
 # How many commands history will save on file
-SAVEHIST=1000
+SAVEHIST=50000
 
 # History won't show duplicates on search
 setopt HIST_FIND_NO_DUPS
@@ -90,6 +83,21 @@ setopt SHARE_HISTORY          # share command history data
 ## PLUGINS ##
 #############
 source "$ZSH_PLUGINS_FOLDER"/.zsh_plugins.zsh
+
+################
+## COMPLETION ##
+################
+# Must run after the plugins: zsh-completions adds its directory to fpath there.
+# Keep the completion dump out of $ZDOTDIR (which is a symlink into the repo)
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+[[ -d "$ZSH_CACHE_DIR" ]] || mkdir -p "$ZSH_CACHE_DIR"
+
+autoload -Uz compinit
+compinit -d "$ZSH_CACHE_DIR/zcompdump"
+
+# Navigable completion menu (arrow keys / TAB) and case-insensitive matching
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 #############
 ### THEME ###

@@ -168,3 +168,13 @@ EOF
     chmod 644 "$HOME/.zsh_local"
 fi
 source "$HOME/.zsh_local"
+
+##############
+### ZOXIDE ###
+##############
+# Smarter cd: `z <keyword>` / `zi` (zi needs fzf). Skipped when not installed.
+# Must stay at the very end: zoxide registers a chpwd hook and expects to be
+# initialized last. Set _ZO_* variables (e.g. _ZO_EXCLUDE_DIRS) in ~/.zsh_local.
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi

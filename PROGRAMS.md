@@ -77,25 +77,27 @@ create a new one with `gpg --full-generate-key`.
 
 ## Utilities
 
-| Program      | Notes                                                                                        | Link                                       |
-|--------------|----------------------------------------------------------------------------------------------|--------------------------------------------|
-| 7-Zip        |                                                                                              | https://www.7-zip.org                      |
-| zip / unzip  | Usually from the package manager                                                             |                                            |
-| CopyQ        | Clipboard manager (or any other)                                                             | https://hluk.github.io/CopyQ/              |
-| xclip        | Copy from the terminal (or similar: `wl-clipboard` on Wayland, `pbcopy` is built into macOS) | https://github.com/astrand/xclip           |
+| Program      | Notes                                                                                                                                       | Link                                       |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| 7-Zip        |                                                                                                                                             | https://www.7-zip.org                      |
+| zip / unzip  | Usually from the package manager                                                                                                            |                                            |
+| CopyQ        | Clipboard manager (or any other)                                                                                                            | https://hluk.github.io/CopyQ/              |
+| xclip        | Copy from the terminal (or similar: `wl-clipboard` on Wayland, `pbcopy` is built into macOS)                                                | https://github.com/astrand/xclip           |
 | eza          | Modern `ls`. The `ls`/`ll`/`la`/`lt` aliases use it when installed, falling back to plain `ls`. Switch color themes with `eza-theme <name>` | https://eza.rocks                          |
-| MediaInfo    |                                                                                              | https://mediaarea.net/en/MediaInfo         |
-| HandBrake    |                                                                                              | https://handbrake.fr                       |
-| virt-manager | Linux only                                                                                   | https://virt-manager.org                   |
-| qBittorrent  | Torrent client                                                                               | https://www.qbittorrent.org                |
-| btop         | System monitor                                                                               | https://github.com/aristocratic/btop       |
-| Glances      | System monitor                                                                               | https://nicolargo.github.io/glances/       |
-| fastfetch    | System info in the terminal                                                                  | https://github.com/fastfetch-cli/fastfetch |
-| unrar        | Extract `.rar` files. Usually from the package manager                                       |                                            |
-| wget         | Download files. Usually from the package manager                                             |                                            |
-| rsync        | Sync/copy files. Usually from the package manager                                            |                                            |
-| pv           | Progress bar for pipes. Usually from the package manager                                     |                                            |
-| duf          | Disk usage overview                                                                          | https://github.com/muesli/duf              |
+| zoxide       | Smarter `cd` (`z`, `zi`). `.zshrc` only initializes it when installed                                                                       | https://github.com/ajeetdsouza/zoxide      |
+| fzf          | Fuzzy finder. Used by `zi` and `z foo<SPACE><TAB>` for interactive selection                                                                | https://github.com/junegunn/fzf            |
+| MediaInfo    |                                                                                                                                             | https://mediaarea.net/en/MediaInfo         |
+| HandBrake    |                                                                                                                                             | https://handbrake.fr                       |
+| virt-manager | Linux only                                                                                                                                  | https://virt-manager.org                   |
+| qBittorrent  | Torrent client                                                                                                                              | https://www.qbittorrent.org                |
+| btop         | System monitor                                                                                                                              | https://github.com/aristocratic/btop       |
+| Glances      | System monitor                                                                                                                              | https://nicolargo.github.io/glances/       |
+| fastfetch    | System info in the terminal                                                                                                                 | https://github.com/fastfetch-cli/fastfetch |
+| unrar        | Extract `.rar` files. Usually from the package manager                                                                                      |                                            |
+| wget         | Download files. Usually from the package manager                                                                                            |                                            |
+| rsync        | Sync/copy files. Usually from the package manager                                                                                           |                                            |
+| pv           | Progress bar for pipes. Usually from the package manager                                                                                    |                                            |
+| duf          | Disk usage overview                                                                                                                         | https://github.com/muesli/duf              |
 
 ## Media and communication
 

@@ -32,6 +32,10 @@ export EZA_ICONS_AUTO=1
 # and in functions/eza-theme.zsh.
 export EZA_CONFIG_DIR="$HOME/.config/eza"
 
+# bat: colorized man pages. `col -bx` strips the overstrike formatting so it
+# also works with mandoc's man (macOS), not only man-db.
+(( $+commands[bat] )) && export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 # Load local secrets (not tracked by git)
 if [[ ! -f "$HOME/.zsh_secrets" ]]; then
     echo "[zshrc] ~/.zsh_secrets not found — creating empty file with restricted permissions (600)"

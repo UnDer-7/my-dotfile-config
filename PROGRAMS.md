@@ -87,6 +87,7 @@ create a new one with `gpg --full-generate-key`.
 | eza          | Modern `ls`. The `ls`/`ll`/`la`/`lt` aliases use it when installed, falling back to plain `ls`. Switch color themes with `eza-theme <name>` | https://eza.rocks                          |
 | zoxide       | Smarter `cd` (`z`, `zi`). `.zshrc` only initializes it when installed                                                                       | https://github.com/ajeetdsouza/zoxide      |
 | fzf          | Fuzzy finder. Used by `zi` and `z foo<SPACE><TAB>` for interactive selection                                                                | https://github.com/junegunn/fzf            |
+| bat          | `cat` with syntax highlighting. When installed, `cat` is aliased to it, and it colorizes `man` pages and `help <command>`                   | https://github.com/sharkdp/bat             |
 | MediaInfo    |                                                                                                                                             | https://mediaarea.net/en/MediaInfo         |
 | HandBrake    |                                                                                                                                             | https://handbrake.fr                       |
 | virt-manager | Linux only                                                                                                                                  | https://virt-manager.org                   |

@@ -58,6 +58,7 @@ create a new one with `gpg --full-generate-key`.
 | fnm (Node.js)                     |                                                   | https://github.com/Schniz/fnm           |
 | Go                                |                                                   | https://go.dev/dl/                      |
 | Docker (and Docker Compose)       |                                                   | https://docs.docker.com/engine/install/ |
+| lazydocker                        | Docker TUI. `lzd` alias when installed            | https://github.com/jesseduffield/lazydocker |
 | JetBrains Toolbox (IntelliJ IDEA) | Install IntelliJ IDEA from the Toolbox            | https://www.jetbrains.com/toolbox-app/  |
 | Visual Studio Code                | Code - OSS as an alternative                      | https://code.visualstudio.com           |
 | Postman                           |                                                   | https://www.postman.com/downloads/      |

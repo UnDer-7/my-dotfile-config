@@ -181,11 +181,39 @@ EOF
 # With zsh installed but not set as the default shell, none of the zsh config
 # loads and nothing reports an error, so point it out.
 check_default_shell() {
-  if [[ "$(basename "${SHELL:-}")" != "zsh" ]]; then
-    echo
-    echo "zsh is not your default shell (current: ${SHELL:-unknown}). Change it with:"
-    echo '  chsh -s "$(command -v zsh)"'
+  local zsh_path
+
+  if [[ "$(basename "${SHELL:-}")" == "zsh" ]]; then
+    return
   fi
+
+  echo
+  echo "zsh is not your default shell (current: ${SHELL:-unknown})."
+
+  # chsh needs an absolute path, so resolve it here instead of printing a
+  # command substitution that expands to "" when zsh is missing.
+  zsh_path="$(command -v zsh || true)"
+  if [[ "$zsh_path" != /* ]]; then
+    echo "zsh is not installed (or not in PATH). Install it (see PROGRAMS.md), then run:"
+    echo '  chsh -s "$(command -v zsh)"'
+    return
+  fi
+
+  echo "Change it with:"
+  echo "  chsh -s $zsh_path"
+
+  # chsh rejects shells missing from /etc/shells.
+  if [[ -r /etc/shells ]] && ! grep -qxF "$zsh_path" /etc/shells; then
+    echo "$zsh_path is not listed in /etc/shells; add it first:"
+    echo "  echo $zsh_path | sudo tee -a /etc/shells"
+  fi
+}
+
+# A login shell changed with chsh only applies to new login sessions, and
+# already open terminals and desktop apps keep the old environment and fonts.
+print_restart_hint() {
+  echo
+  echo "Log out and back in (or restart your computer) so every change takes effect."
 }
 
 usage() {
@@ -213,6 +241,7 @@ case "$1" in
     install_p10k_fonts
     print_next_steps
     check_default_shell
+    print_restart_hint
     ;;
   unlink)
     ensure_stow_installed

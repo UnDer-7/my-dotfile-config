@@ -23,7 +23,7 @@ See [PROGRAMS.md](PROGRAMS.md) for the full list, starting with the essentials
 1. Clone the repo:
 
    ```sh
-   git clone git@github.com:UnDer-7/my-dotfile-config.git ~/my-dotfile-config
+   git clone https://github.com/UnDer-7/my-dotfile-config.git ~/my-dotfile-config
    cd ~/my-dotfile-config
    ```
 

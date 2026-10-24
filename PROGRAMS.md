@@ -83,7 +83,7 @@ create a new one with `gpg --full-generate-key`.
 | 7-Zip        |                                                                                                                                             | https://www.7-zip.org                      |
 | zip / unzip  | Usually from the package manager                                                                                                            |                                            |
 | CopyQ        | Clipboard manager (or any other)                                                                                                            | https://hluk.github.io/CopyQ/              |
-| xclip        | Copy from the terminal (or similar: `wl-clipboard` on Wayland, `pbcopy` is built into macOS)                                                | https://github.com/astrand/xclip           |
+| xclip        | Copy from the terminal (or `wl-clipboard` on Wayland, `pbcopy` is built into macOS). Used by `pwdc`                                         | https://github.com/astrand/xclip           |
 | eza          | Modern `ls`. The `ls`/`ll`/`la`/`lt` aliases use it when installed, falling back to plain `ls`. Switch color themes with `eza-theme <name>` | https://eza.rocks                          |
 | zoxide       | Smarter `cd` (`z`, `zi`). `.zshrc` only initializes it when installed                                                                       | https://github.com/ajeetdsouza/zoxide      |
 | fzf          | Fuzzy finder. Used by `zi` and `z foo<SPACE><TAB>` for interactive selection                                                                | https://github.com/junegunn/fzf            |

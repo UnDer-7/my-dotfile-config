@@ -1,0 +1,254 @@
+#!/usr/bin/env bash
+#
+# Stow-based dotfile linker/unlinker. `link` also clones the zsh plugins and
+# theme and the kitty themes, and installs the Powerlevel10k fonts.
+# Usage: ./setup.sh {link|unlink}
+
+set -euo pipefail
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "$(uname -s)" in
+  Linux)
+    PACKAGES=(zsh vim kitty claude)
+    ;;
+  Darwin)
+    PACKAGES=(zsh vim kitty claude)
+    ;;
+  *)
+    echo "Unsupported OS: $(uname -s)" >&2
+    exit 1
+    ;;
+esac
+
+ensure_stow_installed() {
+  if command -v stow &>/dev/null; then
+    return
+  fi
+
+  read -r -p "stow not found. Install it now? [y/N] " reply
+  if [[ ! "$reply" =~ ^[Yy]$ ]]; then
+    echo "Aborting: stow is required to continue." >&2
+    exit 1
+  fi
+
+  case "$(uname -s)" in
+    Linux)
+      if command -v apt-get &>/dev/null; then
+        echo "stow not found, installing via apt-get, may ask for your sudo password..."
+        sudo apt-get update && sudo apt-get install -y stow
+      elif command -v pacman &>/dev/null; then
+        echo "stow not found, installing via pacman, may ask for your sudo password..."
+        sudo pacman -S --needed stow
+      elif command -v dnf &>/dev/null; then
+        echo "stow not found, installing via dnf, may ask for your sudo password..."
+        sudo dnf install -y stow
+      else
+        echo "No supported package manager found (apt-get, pacman, dnf)." >&2
+        echo "Install GNU Stow manually and run this script again." >&2
+        exit 1
+      fi
+      ;;
+    Darwin)
+      if ! command -v brew &>/dev/null; then
+        echo "Homebrew not found. Install Homebrew first: https://brew.sh" >&2
+        exit 1
+      fi
+      echo "stow not found, installing via brew..."
+      brew install stow
+      ;;
+  esac
+}
+
+require_commands() {
+  local cmd missing=()
+  for cmd in "$@"; do
+    command -v "$cmd" &>/dev/null || missing+=("$cmd")
+  done
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    echo "Missing required commands: ${missing[*]}" >&2
+    echo "Install them and run this script again." >&2
+    exit 1
+  fi
+}
+
+# Plugins and themes are not tracked in git; clone them on each machine.
+# An existing directory is left untouched, so re-running is safe.
+#
+# Every repo cloned with clone_if_missing must also be listed in
+# DOTFILES_UPDATE_REPOS (zsh/.config/zsh/functions/update-my-dotfile-config.zsh),
+# which checks them for updates and pulls them. If a third place starts
+# listing these repos, or the list grows much longer, move it to a single
+# shared file that both read.
+clone_if_missing() {
+  local url="$1" dest="$2"
+
+  if [[ -d "$dest" ]]; then
+    echo "Already present, skipping: $dest"
+    return
+  fi
+
+  git clone --depth=1 "$url" "$dest"
+}
+
+install_zsh_plugins() {
+  local plugins_dir="$HOME/.config/zsh/plugins"
+
+  clone_if_missing https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$plugins_dir/fast-syntax-highlighting"
+  clone_if_missing https://github.com/zsh-users/zsh-autosuggestions.git "$plugins_dir/zsh-autosuggestions"
+  clone_if_missing https://github.com/zsh-users/zsh-completions.git "$plugins_dir/zsh-completions"
+}
+
+install_zsh_theme() {
+  clone_if_missing https://github.com/romkatv/powerlevel10k.git "$HOME/.config/zsh/themes/p10k/powerlevel10k"
+}
+
+# kitty.conf includes its theme from ./kitty-themes/themes/
+install_kitty_themes() {
+  clone_if_missing https://github.com/dexpota/kitty-themes.git "$HOME/.config/kitty/kitty-themes"
+}
+
+# Not a Stow package: theme.yml is a symlink switched at runtime by the
+# eza-theme zsh function. .zshrc exports EZA_CONFIG_DIR=~/.config/eza.
+install_eza_themes() {
+  local eza_dir="${EZA_CONFIG_DIR:-$HOME/.config/eza}"
+  mkdir -p "$eza_dir"
+  clone_if_missing https://github.com/eza-community/eza-themes.git "$eza_dir/eza-themes"
+
+  # Set the default theme only once, so a theme picked later survives re-runs.
+  if [[ -e "$eza_dir/theme.yml" || -L "$eza_dir/theme.yml" ]]; then
+    echo "Already present, skipping: $eza_dir/theme.yml"
+  elif [[ -f "$eza_dir/eza-themes/themes/rose-pine-moon.yml" ]]; then
+    ln -s eza-themes/themes/rose-pine-moon.yml "$eza_dir/theme.yml"
+  else
+    echo "Warning: default eza theme not found: $eza_dir/eza-themes/themes/rose-pine-moon.yml" >&2
+  fi
+}
+
+# Installs the fonts for the current user only (no sudo). The per-user font
+# directory works on any Linux desktop (fontconfig) and on macOS.
+install_p10k_fonts() {
+  local fonts_dir font installed=0
+
+  case "$(uname -s)" in
+    Linux)
+      fonts_dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
+      ;;
+    Darwin)
+      fonts_dir="$HOME/Library/Fonts"
+      ;;
+  esac
+  mkdir -p "$fonts_dir"
+
+  for font in "MesloLGS NF Regular.ttf" "MesloLGS NF Bold.ttf" "MesloLGS NF Italic.ttf" "MesloLGS NF Bold Italic.ttf"; do
+    if [[ -f "$fonts_dir/$font" ]]; then
+      echo "Already present, skipping: $fonts_dir/$font"
+      continue
+    fi
+
+    echo "Installing $font into $fonts_dir..."
+    curl -fsSL -o "$fonts_dir/$font.part" "https://github.com/romkatv/powerlevel10k-media/raw/master/${font// /%20}"
+    mv "$fonts_dir/$font.part" "$fonts_dir/$font"
+    installed=1
+  done
+
+  # macOS picks up new fonts by itself; on Linux refresh the fontconfig cache.
+  if [[ $installed -eq 1 ]] && command -v fc-cache &>/dev/null; then
+    fc-cache -f "$fonts_dir"
+  fi
+}
+
+# Terminal emulators each store their font setting differently, so this part
+# stays manual. Programs are never installed by this script; they are listed
+# in PROGRAMS.md.
+print_next_steps() {
+  cat <<EOF
+
+Done.
+
+Manual steps:
+  - Install the programs listed in:
+      $REPO_DIR/PROGRAMS.md
+  - Terminal font: if you use kitty, nothing to do, just install it (the
+    linked kitty.conf already uses "MesloLGS NF"). For any other terminal,
+    set "MesloLGS NF" as its font, then open a new terminal. Instructions per
+    terminal:
+      https://github.com/romkatv/powerlevel10k#manual-font-installation
+EOF
+}
+
+# With zsh installed but not set as the default shell, none of the zsh config
+# loads and nothing reports an error, so point it out.
+check_default_shell() {
+  local zsh_path
+
+  if [[ "$(basename "${SHELL:-}")" == "zsh" ]]; then
+    return
+  fi
+
+  echo
+  echo "zsh is not your default shell (current: ${SHELL:-unknown})."
+
+  # chsh needs an absolute path, so resolve it here instead of printing a
+  # command substitution that expands to "" when zsh is missing.
+  zsh_path="$(command -v zsh || true)"
+  if [[ "$zsh_path" != /* ]]; then
+    echo "zsh is not installed (or not in PATH). Install it (see PROGRAMS.md), then run:"
+    echo '  chsh -s "$(command -v zsh)"'
+    return
+  fi
+
+  echo "Change it with:"
+  echo "  chsh -s $zsh_path"
+
+  # chsh rejects shells missing from /etc/shells.
+  if [[ -r /etc/shells ]] && ! grep -qxF "$zsh_path" /etc/shells; then
+    echo "$zsh_path is not listed in /etc/shells; add it first:"
+    echo "  echo $zsh_path | sudo tee -a /etc/shells"
+  fi
+}
+
+# A login shell changed with chsh only applies to new login sessions, and
+# already open terminals and desktop apps keep the old environment and fonts.
+print_restart_hint() {
+  echo
+  echo "Log out and back in (or restart your computer) so every change takes effect."
+}
+
+usage() {
+  echo "Usage: ./setup.sh {link|unlink}" >&2
+}
+
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 1
+fi
+
+case "$1" in
+  link)
+    require_commands git curl
+    ensure_stow_installed
+    # Without real ~/.config and ~/.claude, stow would symlink the whole
+    # directory into the repo and every app writing there would write into
+    # the repo (for ~/.claude, including history and credentials).
+    mkdir -p "$HOME/.config" "$HOME/.claude"
+    stow -v -t "$HOME" -d "$REPO_DIR" "${PACKAGES[@]}"
+    install_zsh_plugins
+    install_zsh_theme
+    install_kitty_themes
+    install_eza_themes
+    install_p10k_fonts
+    print_next_steps
+    check_default_shell
+    print_restart_hint
+    ;;
+  unlink)
+    ensure_stow_installed
+    stow -D -v -t "$HOME" -d "$REPO_DIR" "${PACKAGES[@]}"
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

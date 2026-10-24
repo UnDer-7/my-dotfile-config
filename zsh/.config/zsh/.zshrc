@@ -4,9 +4,6 @@ setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_MINUS
 
-autoload -Uz compinit
-compinit
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -17,11 +14,20 @@ fi
 ############
 ### ENVS ###
 ############
-export DOTFILE_CONFIG_HOME=$HOME/my-dotfile-config
-
 export VISUAL=vim
 export EDITOR="$VISUAL"
 export PATH="$HOME/.local/bin:$PATH"
+
+# eza: show icons when the output is a terminal (needs a Nerd Font, e.g. MesloLGS NF)
+export EZA_ICONS_AUTO=1
+# Same config dir on Linux and macOS (theme.yml, managed by setup.sh and eza-theme).
+# If you change it, also update the default in setup.sh (install_eza_themes)
+# and in functions/eza-theme.zsh.
+export EZA_CONFIG_DIR="$HOME/.config/eza"
+
+# bat: colorized man pages. `col -bx` strips the overstrike formatting so it
+# also works with mandoc's man (macOS), not only man-db.
+(( $+commands[bat] )) && export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 # Load local secrets (not tracked by git)
 if [[ ! -f "$HOME/.zsh_secrets" ]]; then
@@ -43,30 +49,25 @@ fi
 source "$HOME/.zsh_secrets"
 
 # ZSH
-export ZSH_HOME=$DOTFILE_CONFIG_HOME/zsh
+export ZSH_HOME=$ZDOTDIR
 export ZSH_PLUGINS_FOLDER=$ZSH_HOME/plugins
 export ZSH_THEMES_FOLDER=$ZSH_HOME/themes
 export ZSH_FUNCTIONS_FOLDER=$ZSH_HOME/functions
 export ZSH_ALIAS_FOLDER=$ZSH_HOME/alias
 
-# VIM
-export VIM_HOME=$DOTFILE_CONFIG_HOME/vim
-
-#############
-#### VIM ####
-#############
-export VIMINIT="source $VIM_HOME/.vimrc"
-
 ###############
 # ZSH OPTIONS #
 ###############
-export HISTFILE=$ZSH_HOME/.zsh_history
+# Keep history out of $ZDOTDIR (which is a symlink into the repo)
+ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
+[[ -d "$ZSH_STATE_DIR" ]] || mkdir -p "$ZSH_STATE_DIR"
+export HISTFILE=$ZSH_STATE_DIR/history
 
 # How many commands zsh will load to memory
-HISTSIZE=1000
+HISTSIZE=50000
 
 # How many commands history will save on file
-SAVEHIST=1000
+SAVEHIST=50000
 
 # History won't show duplicates on search
 setopt HIST_FIND_NO_DUPS
@@ -82,6 +83,21 @@ setopt SHARE_HISTORY          # share command history data
 ## PLUGINS ##
 #############
 source "$ZSH_PLUGINS_FOLDER"/.zsh_plugins.zsh
+
+################
+## COMPLETION ##
+################
+# Must run after the plugins: zsh-completions adds its directory to fpath there.
+# Keep the completion dump out of $ZDOTDIR (which is a symlink into the repo)
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+[[ -d "$ZSH_CACHE_DIR" ]] || mkdir -p "$ZSH_CACHE_DIR"
+
+autoload -Uz compinit
+compinit -d "$ZSH_CACHE_DIR/zcompdump"
+
+# Navigable completion menu (arrow keys / TAB) and case-insensitive matching
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 #############
 ### THEME ###
@@ -111,31 +127,31 @@ done
 if [[ -d "$HOME/.custom_scripts" ]] || mkdir -p "$HOME/.custom_scripts"; then
   if [[ ! -e "$HOME/.custom_scripts/README.md" ]]; then
     cat > "$HOME/.custom_scripts/README.md" << 'EOF'
-# Scripts locais do zsh
+# Local zsh scripts
 
-Esta pasta fica fora do repositório de dotfiles e é criada pelo .zshrc.
-Somente arquivos regulares com extensão `.sh` diretamente nesta pasta são
-carregados, em ordem de nome, ao abrir um terminal. Subpastas e arquivos com
-outras extensões (incluindo este README.md) são ignorados.
+This folder lives outside the dotfiles repository and is created by .zshrc.
+Only regular files with the `.sh` extension directly inside this folder are
+loaded, in name order, when a terminal opens. Subfolders and files with other
+extensions (including this README.md) are ignored.
 
-Os arquivos são carregados com `source` no zsh atual: use código compatível
-com zsh, mesmo com a extensão `.sh`. Não é necessário dar permissão de execução.
-Todo código fora de funções é executado na inicialização do terminal;
-coloque aqui apenas scripts confiáveis e evite ações automáticas com efeitos externos.
-Para credenciais e tokens, use `~/.zsh_secrets`, não esta pasta.
+Files are loaded with `source` into the current zsh: write zsh-compatible code,
+even with the `.sh` extension. No execute permission is needed.
+All code outside functions runs at terminal startup; only put trusted scripts
+here and avoid automatic actions with external side effects.
+For credentials and tokens, use `~/.zsh_secrets`, not this folder.
 
-Exemplo de arquivo `projetos.sh`:
+Example file `projects.sh`:
 
-zsh
-meus_projetos() {
+```zsh
+my_projects() {
   cd "$HOME/projects"
 }
+```
 
-
-Salve o arquivo e abra um novo terminal para usar `meus_projetos`.
-Funções com o mesmo nome substituem definições anteriores do repo.
-O `~/.zsh_local` é carregado depois e mantém prioridade sobre estes scripts.
-A criação automática não sobrescreve este README.md nem seus scripts existentes.
+Save the file and open a new terminal to use `my_projects`.
+Functions with the same name override earlier definitions from the repo.
+`~/.zsh_local` is loaded afterwards and takes precedence over these scripts.
+Automatic creation never overwrites this README.md or your existing scripts.
 EOF
   fi
 
@@ -165,14 +181,12 @@ EOF
 fi
 source "$HOME/.zsh_local"
 
-###################
-# VERSION MANAGER #
-###################
-# FNM: Node.js version manager
-export PATH="$HOME/.local/share/fnm:$PATH"
-eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
-
-# SdkMan: Java, Maven, ... version manager
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+##############
+### ZOXIDE ###
+##############
+# Smarter cd: `z <keyword>` / `zi` (zi needs fzf). Skipped when not installed.
+# Must stay at the very end: zoxide registers a chpwd hook and expects to be
+# initialized last. Set _ZO_* variables (e.g. _ZO_EXCLUDE_DIRS) in ~/.zsh_local.
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi

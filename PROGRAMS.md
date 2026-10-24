@@ -52,21 +52,21 @@ create a new one with `gpg --full-generate-key`.
 
 ## Development
 
-| Program                           | Notes                                             | Link                                    |
-|-----------------------------------|---------------------------------------------------|-----------------------------------------|
-| SDKMAN (Java, Maven, Gradle)      |                                                   | https://sdkman.io/install               |
-| fnm (Node.js)                     |                                                   | https://github.com/Schniz/fnm           |
-| Go                                |                                                   | https://go.dev/dl/                      |
-| Docker (and Docker Compose)       |                                                   | https://docs.docker.com/engine/install/ |
+| Program                           | Notes                                             | Link                                        |
+|-----------------------------------|---------------------------------------------------|---------------------------------------------|
+| SDKMAN (Java, Maven, Gradle)      |                                                   | https://sdkman.io/install                   |
+| fnm (Node.js)                     |                                                   | https://github.com/Schniz/fnm               |
+| Go                                |                                                   | https://go.dev/dl/                          |
+| Docker (and Docker Compose)       |                                                   | https://docs.docker.com/engine/install/     |
 | lazydocker                        | Docker TUI. `lzd` alias when installed            | https://github.com/jesseduffield/lazydocker |
-| JetBrains Toolbox (IntelliJ IDEA) | Install IntelliJ IDEA from the Toolbox            | https://www.jetbrains.com/toolbox-app/  |
-| Visual Studio Code                | Code - OSS as an alternative                      | https://code.visualstudio.com           |
-| Postman                           |                                                   | https://www.postman.com/downloads/      |
-| Bruno                             |                                                   | https://www.usebruno.com                |
-| GitHub CLI (`gh`)                 | See [Git and GitHub setup](#git-and-github-setup) | https://cli.github.com                  |
-| ripgrep (`rg`)                    | Fast `grep` replacement                           | https://github.com/BurntSushi/ripgrep   |
-| Meld                              | Visual diff/merge for files and folders           | https://meldmerge.org                   |
-| just                              | Command runner for project tasks                  | https://github.com/casey/just           |
+| JetBrains Toolbox (IntelliJ IDEA) | Install IntelliJ IDEA from the Toolbox            | https://www.jetbrains.com/toolbox-app/      |
+| Visual Studio Code                | Code - OSS as an alternative                      | https://code.visualstudio.com               |
+| Postman                           |                                                   | https://www.postman.com/downloads/          |
+| Bruno                             |                                                   | https://www.usebruno.com                    |
+| GitHub CLI (`gh`)                 | See [Git and GitHub setup](#git-and-github-setup) | https://cli.github.com                      |
+| ripgrep (`rg`)                    | Fast `grep` replacement                           | https://github.com/BurntSushi/ripgrep       |
+| Meld                              | Visual diff/merge for files and folders           | https://meldmerge.org                       |
+| just                              | Command runner for project tasks                  | https://github.com/casey/just               |
 
 ## Browsers
 

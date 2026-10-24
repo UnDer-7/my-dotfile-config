@@ -2,6 +2,7 @@
 # --paging=never keeps cat's behavior of printing straight to the terminal.
 # When piped or redirected, bat prints the plain file contents like cat.
 # Use `\cat` or `command cat` to bypass the alias.
+# Keep the bat options in sync with catc (functions/catc.zsh).
 if (( $+commands[bat] )); then
   alias cat='bat --paging=never'
 fi
